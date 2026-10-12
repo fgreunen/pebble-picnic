@@ -2,6 +2,8 @@
 
 **A cheerful, fully offline slingshot game for children.** Pull back a pebble, topple playful structures and collect every green star pod—no installation, account or internet connection required.
 
+🎯 **[Play Pebble Picnic online](https://pebble-picnic.francoisvangreunen.com/)** and see how many picnic scenes you can topple!
+
 ![Pebble Picnic's snowy grand picnic level, with a slingshot, glass and wood towers, star pods, chain-reaction crates and four pebble types](docs/images/pebble-picnic-snowy-grand-picnic.png)
 
 Plain JavaScript · Canvas · Web Audio · Matter.js · [MIT licensed](LICENSE)

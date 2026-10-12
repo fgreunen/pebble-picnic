@@ -2,6 +2,12 @@
 
 T1–T30 are complete. Play offline with `PLAY.cmd` or `index.html`.
 
+## 12 October 2026 — online play link (complete)
+
+- Owner: `/root`; scope: README and handoff only. Added a prominent invitation linking to the deployed game at `https://pebble-picnic.francoisvangreunen.com/`.
+- Verification: Markdown destination and local README links checked; `git diff --check` passed. The external URL could not be independently reached from the available web inspection tool. No runtime files changed, so gameplay tests were not run.
+- Remaining/running jobs: none.
+
 ## 12 October 2026 — public README refresh (complete)
 
 - Owner: `/root`; scope: public-facing documentation only. Reworked `README.md` into a GitHub landing page with a concise pitch, launch path, highlights, screenshots, compact controls, privacy/accessibility notes, development entry points and license/attribution. Curated three visually inspected gameplay captures into `docs/images/` (1,265×712, 975×948 and 700×820; 137,273 bytes total) and documented that narrow public-documentation exception in `DEVELOPMENT.md`; raw/development captures still belong in temp. Generalized two user-specific temp paths in this handoff before publication.
