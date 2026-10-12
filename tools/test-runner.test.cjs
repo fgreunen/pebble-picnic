@@ -5,9 +5,10 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const runner = require('./test-runner.cjs');
+const artifactDirectory = require('./artifacts.cjs');
 
 async function main() {
-  const output = path.resolve(__dirname, '../test-results', `runner-self-test-${Date.now()}-${crypto.randomBytes(3).toString('hex')}`);
+  const output = path.join(artifactDirectory(), 'test-results', `runner-self-test-${Date.now()}-${crypto.randomBytes(3).toString('hex')}`);
   const root = path.join(output, 'source');
   for (const dir of ['src', 'vendor', 'tests', 'tools', 'test-results']) await fs.mkdir(path.join(root, dir), { recursive: true });
   const files = {
@@ -21,7 +22,7 @@ async function main() {
     'tests/two.test.cjs': 'console.log(JSON.stringify({pid:process.pid,start:Date.now()})); setTimeout(() => {console.log("PASS two"); console.log(JSON.stringify({end:Date.now()}));}, 200);',
     'tests/fail.test.cjs': 'console.error("expected fixture failure"); process.exitCode=1;',
     'tests/hang.test.cjs': 'setInterval(() => {}, 1000);',
-    'tests/physics-audit.test.cjs': 'require("node:fs").writeFileSync(require("node:path").join(__dirname,"physics-report.json"), "{\\"checksPassed\\":1}\\n"); console.log("PASS synthetic audit");'
+    'tests/physics-audit.test.cjs': 'require("node:fs").writeFileSync(process.env.PICNIC_AUDIT_REPORT, "{\\"checksPassed\\":1}\\n"); console.log("PASS synthetic audit");'
   };
   for (const [name, value] of Object.entries(files)) await fs.writeFile(path.join(root, name), value);
   let passed = 0;
@@ -82,9 +83,12 @@ async function main() {
     assert.equal(batch.passed, true);
     assert.deepEqual(JSON.parse(await fs.readFile(path.join(logs, 'physics-report.json'), 'utf8')), { checksPassed: 1 });
     assert.deepEqual(JSON.parse(await fs.readFile(path.join(root, 'tests/physics-report.json'), 'utf8')), { old: true });
-    assert.equal(await runner.publishReport(root, current.snapshot, current.manifest, batch, logs), true);
+    const latest = path.join(output, 'physics-report.json');
+    assert.equal(await runner.publishReport(root, current.snapshot, current.manifest, batch, logs, latest), true);
+    assert.deepEqual(JSON.parse(await fs.readFile(latest, 'utf8')), { checksPassed: 1 });
+    assert.deepEqual(JSON.parse(await fs.readFile(path.join(root, 'tests/physics-report.json'), 'utf8')), { old: true });
     await fs.writeFile(path.join(root, 'src/game.js'), '/* newer source */');
-    assert.equal(await runner.publishReport(root, current.snapshot, current.manifest, batch, logs), false);
+    assert.equal(await runner.publishReport(root, current.snapshot, current.manifest, batch, logs, latest), false);
   });
   await test('CLI validates options, deduplicates suites and preserves the serial fallback', async () => {
     assert.equal(runner.parseArgs([]).mode, 'parallel'); assert.equal(runner.parseArgs(['--serial']).mode, 'serial');
@@ -96,12 +100,13 @@ async function main() {
     await assert.rejects(runner.runBatch(frozen.snapshot, ['../escape.cjs'], path.join(output, 'invalid'), 'parallel'), /Invalid suite/);
   });
   await test('successful CLI runs discard copies but keep logs and manifests; failures and opt-in retain copies', async () => {
-    const results = path.join(root, 'test-results');
+    const artifacts = path.join(output, 'cli-artifacts'), results = path.join(artifacts, 'test-results');
+    await fs.mkdir(results, { recursive: true });
     for (const [suite, args, expectedCode, retained] of [
       ['one', [], 0, false], ['one', ['--keep-snapshot'], 0, true], ['fail', [], 1, true]
     ]) {
       const before = new Set(await fs.readdir(results));
-      assert.equal(await runner.main(['--suite', `tests/${suite}.test.cjs`, ...args], root), expectedCode);
+      assert.equal(await runner.main(['--suite', `tests/${suite}.test.cjs`, ...args], root, artifacts), expectedCode);
       const added = (await fs.readdir(results)).filter(name => !before.has(name));
       assert.equal(added.length, 1);
       const directory = path.join(results, added[0]);
@@ -112,8 +117,10 @@ async function main() {
       await fs.access(path.join(directory, 'manifest.json'));
       await fs.access(result.batches[0].results[0].stdout);
     }
+    assert.deepEqual(await fs.readdir(path.join(root, 'test-results')), ['do-not-copy.txt']);
+    assert.ok(!path.relative(path.resolve(__dirname, '..'), output).startsWith('test-results' + path.sep));
   });
-  const boundary = path.resolve(__dirname, '../test-results') + path.sep;
+  const boundary = path.resolve(artifactDirectory(), 'test-results') + path.sep;
   if (!output.startsWith(boundary)) throw new Error('Synthetic workspace escapes test-results');
   await fs.rm(output, { recursive: true, force: true });
   console.log(`\n${passed} runner checks passed. Synthetic workspace removed.`);

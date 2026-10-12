@@ -6,6 +6,7 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const { spawn } = require('node:child_process');
 const { performance } = require('node:perf_hooks');
+const artifactDirectory = require('./artifacts.cjs');
 
 const DEFAULT_SUITES = Object.freeze([
   'tests/physics.test.cjs', 'tests/controls.test.cjs',
@@ -103,7 +104,8 @@ async function runSuite(snapshot, suite, logs, timeoutMs) {
   const stdoutPath = path.join(logs, `${name}.stdout.log`), stderrPath = path.join(logs, `${name}.stderr.log`);
   const out = fs.createWriteStream(stdoutPath), err = fs.createWriteStream(stderrPath);
   const start = performance.now();
-  const child = spawn(process.execPath, [resolved], { cwd: snapshot, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+  const child = spawn(process.execPath, [resolved], { cwd: snapshot, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'],
+    env: { ...process.env, PICNIC_AUDIT_REPORT: path.join(logs, 'physics-report.json') } });
   child.stdout.pipe(out); child.stderr.pipe(err);
   let timedOut = false, spawnError = null;
   const timer = setTimeout(() => { timedOut = true; child.kill(); }, timeoutMs);
@@ -133,20 +135,16 @@ async function runBatch(snapshot, suites, output, mode, options = {}) {
   }
   const batch = { mode, passed: results.every(result => result.passed), durationMs: performance.now() - start,
     checksPassed: results.reduce((total, result) => total + result.checksPassed, 0), results };
-  // Preserve each successful audit output separately. Never treat a leftover report as a pass.
-  if (results.some(result => result.suite === 'tests/physics-audit.test.cjs' && result.passed)) {
-    const report = path.join(snapshot, 'tests/physics-report.json');
-    try { await fsp.copyFile(report, path.join(output, 'physics-report.json')); }
-    catch (error) { if (error.code !== 'ENOENT') throw error; }
-  }
+  // Audit children write directly to this batch's output, never to source inputs.
   await fsp.writeFile(path.join(output, 'results.json'), JSON.stringify(batch, null, 2) + '\n');
   return batch;
 }
 
-async function publishReport(root, snapshot, manifest, batch, output) {
+async function publishReport(root, snapshot, manifest, batch, output, destination = path.join(artifactDirectory(root), 'physics-report.json')) {
   if (!batch.passed || !batch.results.some(result => result.suite === 'tests/physics-audit.test.cjs' && result.passed)) return false;
   if (!same(manifest, await manifestFor(root)) || !same(manifest, await manifestFor(snapshot))) return false;
-  await fsp.copyFile(path.join(output, 'physics-report.json'), path.join(root, 'tests/physics-report.json'));
+  await fsp.mkdir(path.dirname(destination), { recursive: true });
+  await fsp.copyFile(path.join(output, 'physics-report.json'), destination);
   return true;
 }
 
@@ -183,18 +181,19 @@ function parseArgs(args) {
   return options;
 }
 
-async function main(args, root = path.resolve(__dirname, '..')) {
+async function main(args, root = path.resolve(__dirname, '..'), artifacts = artifactDirectory(root)) {
   const options = parseArgs(args);
   if (options.help) {
     console.log('node tools/test-runner.cjs [--parallel|--serial] [--compare] [--suite tests/name.test.cjs]');
     console.log('  [--timeout 120000] [--attempts 3] [--publish-report] [--keep-snapshot]');
     console.log(`Default: ${DEFAULT_SUITES.length} suites in separate parallel Node processes, on SHA-256-verified frozen inputs.`);
     console.log('Successful runs discard temporary input copies; logs/manifests remain. Use --keep-snapshot to retain copies.');
-    console.log('--compare: serial then parallel on the SAME snapshot. Reports remain in test-results unless published explicitly.');
+    console.log(`Artifacts: ${artifacts}`);
+    console.log('--compare: serial then parallel on the SAME snapshot. --publish-report updates the latest audit in the temp artifact directory.');
     return 0;
   }
   const tag = new Date().toISOString().replace(/[:.]/g, '-') + `-${process.pid}-${crypto.randomBytes(3).toString('hex')}`;
-  const output = path.join(root, 'test-results', tag), start = performance.now();
+  const output = path.join(artifacts, 'test-results', tag), start = performance.now();
   const frozen = await freezeInputs(root, output, options);
   console.log(`Frozen ${frozen.manifest.files.length} inputs: ${frozen.manifest.hash}`);
   console.log(`Snapshot: ${frozen.snapshot}`);
@@ -210,7 +209,7 @@ async function main(args, root = path.resolve(__dirname, '..')) {
   const snapshotUnchanged = same(frozen.manifest, snapshotAfter);
   const lastBatch = batches[batches.length - 1];
   const reportPublished = options.publish && sourceMatchesSnapshot && snapshotUnchanged ?
-    await publishReport(root, frozen.snapshot, frozen.manifest, lastBatch, path.join(output, lastBatch.mode)) : false;
+    await publishReport(root, frozen.snapshot, frozen.manifest, lastBatch, path.join(output, lastBatch.mode), path.join(artifacts, 'physics-report.json')) : false;
   // Publishing performs another live-input check; record the latest state, including
   // an edit that arrived after the initial end-of-test comparison.
   if (options.publish) sourceMatchesSnapshot = same(frozen.manifest, await manifestFor(root));

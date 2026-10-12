@@ -6,7 +6,7 @@ The former static obstacles now use finite-health dynamic `metal`: density .0065
 
 Only the ground body is static in all five levels. Physical roof/ramp supports and broader foundations preserve stable starts; the seesaw joint references the movable metal base rather than a world anchor. Base removal releases the joint and wakes the beam; Undo restores shared body/constraint references and exact continuation. Fixed scenery rope anchors retain the existing hanging-bridge behavior.
 
-Final frozen [integrated results](test-results/2026-10-12T15-53-02-491Z-12680-20d4e4/results.json), SHA-256 `0e6d5d64bffee72cad612dd7da3bbe5327d7cbc259bf35b9f4a85853bde5bcfa`: all 16 audit controls passed within 119 gameplay checks. [Current audit](tests/physics-report.json): two-minute drift .087913px with no damage, 100 seeded games/577 shots/53 explosions/max 33 bodies; all nominal finite-ammo routes win and recovery samples score 7/9,5/9,5/9,9/9,6/9. Full type-specific and alternate route regressions also pass. Older measurements below describe the prior build.
+Final frozen integrated results (temporary artifact: `test-results/2026-10-12T15-53-02-491Z-12680-20d4e4/results.json`), SHA-256 `0e6d5d64bffee72cad612dd7da3bbe5327d7cbc259bf35b9f4a85853bde5bcfa`: all 16 audit controls passed within 119 gameplay checks. Current audit (temporary artifact: `tests/physics-report.json`): two-minute drift .087913px with no damage, 100 seeded games/577 shots/53 explosions/max 33 bodies; all nominal finite-ammo routes win and recovery samples score 7/9,5/9,5/9,9/9,6/9. Full type-specific and alternate route regressions also pass. Older measurements below describe the prior build.
 
 ## Earlier 11 October evidence
 

@@ -1,6 +1,7 @@
 'use strict';
 const assert = require('node:assert/strict');
 const fs = require('node:fs'), path = require('node:path'), { performance } = require('node:perf_hooks');
+const artifactDirectory = require('../tools/artifacts.cjs');
 const { M, P, rig, piece, pebble, steps, fire, finite, momentum, energy } = require('../tools/physics-sandbox.cjs');
 let passed = 0;
 const metrics = {};
@@ -165,5 +166,7 @@ test('100 seeded random multi-shot games stay finite and resolve every shot', ()
     p99StepMs: timings[Math.floor(timings.length * .99)], durationMs: performance.now() - start };
   assert.ok(maxBodies < 40); assert.ok(explosions > 0);
 });
-fs.writeFileSync(path.join(__dirname, 'physics-report.json'), JSON.stringify({ checksPassed: passed, metrics }, null, 2) + '\n');
-console.log(`\n${passed} physicist-style sandbox checks passed. Metrics: tests/physics-report.json`);
+const report = process.env.PICNIC_AUDIT_REPORT || path.join(artifactDirectory(), 'physics-report.json');
+fs.mkdirSync(path.dirname(report), { recursive: true });
+fs.writeFileSync(report, JSON.stringify({ checksPassed: passed, metrics }, null, 2) + '\n');
+console.log(`\n${passed} physicist-style sandbox checks passed. Metrics: ${report}`);

@@ -1,3 +1,15 @@
 node_modules/
 test-results/
 *.tgz
+
+# Generated development artifacts belong in the system temp folder.
+/tests/physics-report.json
+/screenshots/
+/artifacts/
+/tmp/
+/temp/
+/*-preview.png
+/*-preview.jpg
+/preview.jpg
+/victory-delay.jpg
+/toddler-result-small.jpg
