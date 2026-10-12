@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#eef2e3">
+  <title>Pebble Picnic · A little slingshot adventure</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='%23ed855b'/%3E%3Ccircle cx='24' cy='29' r='3' fill='%232c4842'/%3E%3Ccircle cx='41' cy='29' r='3' fill='%232c4842'/%3E%3Cpath d='M25 40 Q32 47 40 40' fill='none' stroke='%232c4842' stroke-width='3'/%3E%3C/svg%3E">
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">✦</span><div><h1>Pebble Picnic</h1><p>A little slingshot adventure</p></div></div>
+      <div class="toolbar">
+        <button id="levels-button" class="light-button" title="Choose a level">▦ <span>Levels</span></button>
+        <button id="again-button" class="light-button again-button" hidden>↻ Again!</button>
+        <button id="restart-button" class="icon-button" title="Restart level (R)" aria-label="Restart level">↻</button>
+        <button id="undo-button" class="icon-button" title="Undo last shot (U)" aria-label="Undo last shot" disabled>↶</button>
+        <button id="mute-button" class="icon-button" title="Sound on/off (M)" aria-label="Turn sound off" aria-pressed="false">♫</button>
+        <button id="motion-button" class="icon-button" title="Reduce motion" aria-label="Reduce motion" aria-pressed="false">✦</button>
+        <button id="mode-button" class="light-button" title="Switch solo / cooperative turns (restarts this level)" aria-pressed="false">1P</button>
+        <button id="easy-button" class="light-button control-toggle" title="Mouse / Easy Mode keyboard controls" aria-pressed="false">↙ Mouse</button>
+      </div>
+    </header>
+    <div class="face-bar"><span aria-hidden="true">Your pebble</span><div id="face-picker" aria-label="Choose a pebble decoration"></div></div>
+    <section class="game-frame" aria-label="Slingshot game">
+      <div class="stage-bar"><div class="stage-name"><span id="level-number">01</span><div><small>THE PICNIC TRAIL</small><h2 id="level-name">First tumble</h2></div></div><div class="counters"><div id="shot-counter" title="Balls left"></div><div class="target-counter"><span aria-hidden="true">★</span><strong id="target-counter">0 / 2</strong><span class="counter-label">stars</span></div></div></div>
+      <canvas id="game" width="1280" height="720" tabindex="0" aria-label="Mouse: drag backward and release. Easy Mode: up/down aim, left/right power, Space fires. Choose balls with the icons. Bomb fuse is three seconds after launch. Escape cancels. R restarts. U undoes."></canvas>
+      <div class="play-hint" id="play-hint"><span class="mouse-symbol" aria-hidden="true">↙</span><span><strong>Pull back. Let go!</strong><small>Knock down the green star pods</small></span></div>
+      <button id="skip-button" class="skip-button" hidden>Next pebble →</button>
+      <div id="turn-badge" class="turn-badge" hidden aria-live="polite">● Player 1</div>
+      <div id="ammo-picker" class="ammo-picker" aria-label="Choose a ball"></div>
+      <div class="power-wrap" id="power-wrap" hidden><span>POWER <span id="angle-readout" hidden>· <b id="angle-value">60°</b> ↗</span></span><div><i id="power-fill"></i></div><small id="cancel-hint">Esc / right-click to cancel</small><button id="cancel-button">Cancel aim ×</button></div>
+      <div class="outcome-overlay" id="outcome" hidden><div class="outcome-card"><span id="outcome-icon" class="outcome-icon">★</span><p id="outcome-eyebrow">PICNIC PERFECT</p><h2 id="outcome-title">All stars collected!</h2><p id="outcome-text">What a lovely little tumble.</p><div class="outcome-actions"><button id="next-button" class="primary-button">Next picnic →</button><button id="retry-button" class="light-button">↻ Play again</button><button id="outcome-undo" class="light-button">↶ Undo shot</button></div></div></div>
+      <div class="level-overlay" id="level-picker" hidden><div class="level-card"><div class="picker-heading"><div><p>THE PICNIC TRAIL</p><h2>Choose a picnic</h2></div><button id="close-levels" class="icon-button" aria-label="Close level picker">×</button></div><div class="picker-tabs"><button id="adventure-tab" class="light-button" aria-pressed="true">🌼 Adventure</button><button id="quick-tab" class="light-button" aria-pressed="false">🎈 Quick play</button></div><div id="sticker-album" class="sticker-album" aria-label="Earned stickers"></div><div id="level-grid"></div><p class="picker-note">Collect a sticker at every stop. Bubbles and fruit are extra fun!</p></div></div>
+    </section>
+    <footer><span id="control-hints"><kbd>↙</kbd> Drag & release <i>·</i> <kbd>Esc</kbd> Cancel <i>·</i> <kbd>R</kbd> Retry <i>·</i> <kbd>U</kbd> Undo</span><span class="material-key"><b class="wood-dot"></b> Wood <b class="glass-dot"></b> Glass <b class="stone-dot"></b> Stone <b class="metal-dot"></b> Metal</span><span class="offline-label">● Made for offline adventures</span></footer>
+    <p id="live-status" class="sr-only" role="status" aria-live="polite"></p>
+    <noscript>This game needs JavaScript. Please enable it in your browser.</noscript>
+  </main>
+  <link rel="stylesheet" href="styles.css">
+  <script src="vendor/matter.min.js"></script>
+  <script src="src/levels.js"></script>
+  <script src="src/physics.js"></script>
+  <script src="src/damage-art.js"></script>
+  <script src="src/game.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "5": [{ "type": "pebble", "pull": [-40, 8], "wait": 10000 }],
+  "6": [{ "type": "pebble", "pull": [-40, 40], "wait": 10000 }],
+  "7": [{ "type": "pebble", "pull": [-88, 16], "wait": 10000 }],
+  "8": [{ "type": "pebble", "pull": [-80, 16], "wait": 12500 }, { "type": "pebble", "pull": [-40, -16], "wait": 10000 }],
+  "9": [{ "type": "pebble", "pull": [-72, 24], "wait": 12500 }, { "type": "pebble", "pull": [-40, -16], "wait": 10000 }]
+}

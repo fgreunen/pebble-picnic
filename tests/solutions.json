@@ -1,0 +1,188 @@
+[
+  [
+    {
+      "type": "pebble",
+      "pull": [
+        -32,
+        56
+      ],
+      "wait": 6000
+    },
+    {
+      "type": "pebble",
+      "pull": [
+        -96,
+        -24
+      ],
+      "wait": 6000
+    }
+  ],
+  [
+    {
+      "type": "pebble",
+      "pull": [
+        -40,
+        72
+      ],
+      "wait": 6000
+    },
+    {
+      "type": "heavy",
+      "pull": [
+        -96,
+        8
+      ],
+      "wait": 6000
+    },
+    {
+      "type": "pebble",
+      "pull": [
+        -48,
+        48
+      ],
+      "wait": 6000
+    },
+    {
+      "type": "pebble",
+      "pull": [
+        -40,
+        56
+      ],
+      "wait": 6000
+    },
+    {
+      "type": "bouncy",
+      "pull": [
+        -64,
+        -24
+      ],
+      "wait": 6000
+    }
+  ],
+  [
+    {
+      "type": "heavy",
+      "pull": [
+        -88,
+        0
+      ],
+      "wait": 6000
+    },
+    {
+      "type": "pebble",
+      "pull": [
+        -56,
+        16
+      ],
+      "wait": 6000
+    },
+    {
+      "type": "heavy",
+      "pull": [
+        -80,
+        8
+      ],
+      "wait": 6000
+    },
+    {
+      "type": "pebble",
+      "pull": [
+        -48,
+        56
+      ],
+      "wait": 6000
+    },
+    {
+      "type": "pebble",
+      "pull": [
+        -96,
+        16
+      ],
+      "wait": 6000
+    }
+  ],
+  [
+    {
+      "type": "bomb",
+      "pull": [
+        -64,
+        40
+      ],
+      "wait": 6000
+    },
+    {
+      "type": "heavy",
+      "pull": [
+        -96,
+        8
+      ],
+      "wait": 6000
+    },
+    {
+      "type": "heavy",
+      "pull": [
+        -96,
+        24
+      ],
+      "wait": 6000
+    },
+    {
+      "type": "pebble",
+      "pull": [
+        -96,
+        -16
+      ],
+      "wait": 6000
+    },
+    {
+      "type": "pebble",
+      "pull": [
+        -40,
+        64
+      ],
+      "wait": 6000
+    },
+    {
+      "type": "pebble",
+      "pull": [
+        -40,
+        64
+      ],
+      "wait": 6000
+    },
+    {
+      "type": "pebble",
+      "pull": [
+        -96,
+        16
+      ],
+      "wait": 6000
+    }
+  ],
+  [
+    {
+      "type": "heavy",
+      "pull": [
+        -64,
+        32
+      ],
+      "wait": 6000
+    },
+    {
+      "type": "pebble",
+      "pull": [
+        -96,
+        -8
+      ],
+      "wait": 6000
+    },
+    {
+      "type": "bomb",
+      "pull": [
+        -96,
+        24
+      ],
+      "wait": 6000
+    }
+  ]
+]

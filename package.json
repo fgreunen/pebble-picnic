@@ -1,0 +1,13 @@
+{
+  "name": "pebble-picnic",
+  "version": "1.3.0",
+  "private": true,
+  "description": "Offline slingshot playground for children",
+  "scripts": {
+    "test": "node tools/test-runner.cjs --publish-report",
+    "test:serial": "node tools/test-runner.cjs --serial --publish-report",
+    "test:benchmark": "node tools/test-runner.cjs --compare --publish-report",
+    "physics:check": "node tests/physics-audit.test.cjs",
+    "serve": "node tools/serve.cjs"
+  }
+}

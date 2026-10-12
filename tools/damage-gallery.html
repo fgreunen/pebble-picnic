@@ -1,0 +1,23 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Damage artwork inspection · Pebble Picnic</title>
+<style>body{margin:30px;background:#eef2e3;font:16px 'Segoe UI',sans-serif;color:#354d42}canvas{background:#fff9e8;border-radius:16px;max-width:100%}p{max-width:760px}</style>
+<h1>Structural damage inspection</h1>
+<p>Development visual check: health alone controls every mark. The outer shapes keep their collision silhouettes.</p>
+<canvas width="900" height="480"></canvas>
+<script src="../src/damage-art.js"></script>
+<script>
+const ctx=document.querySelector('canvas').getContext('2d');
+const columns=[['wood','#cd9b66'],['glass','#9ed1d3'],['stone','#929ea0']];
+const health=[1,.75,.5,.1];
+ctx.textAlign='center';ctx.fillStyle='#354d42';ctx.font='bold 20px Segoe UI';
+columns.forEach(([material,color],i)=>{
+  const x=180+i*280;ctx.fillText(material,x,42);
+  health.forEach((ratio,j)=>{
+    const y=95+j*100;ctx.save();ctx.translate(x,y);
+    ctx.fillStyle=color;ctx.beginPath();ctx.roundRect(-95,-17,190,34,4);ctx.fill();
+    PicnicDamage.draw(ctx,{kind:'piece',material,width:190,height:34,hp:26*ratio,maxHp:26,seed:7});ctx.restore();
+    ctx.fillStyle='#526754';ctx.font='14px Segoe UI';ctx.fillText(`${Math.round(ratio*100)}% health`,x,y+43);
+  });ctx.font='bold 20px Segoe UI';
+});
+</script>
